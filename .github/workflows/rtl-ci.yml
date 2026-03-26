@@ -1,0 +1,27 @@
+name: RTL CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-sim:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout your repo
+      - uses: actions/checkout@v3
+
+      # 2. Install Verilator and make
+      - name: Install Verilator
+        run: sudo apt-get update && sudo apt-get install -y verilator make
+
+      # 3. Compile and simulate your RTL
+      - name: Run Verilator Simulation
+        run: |
+          mkdir -p obj_dir
+          verilator --cc --exe counter.sv tb_counter.sv -Wall -Wno-fatal
+          make -C obj_dir -f Vcounter.mk
+          obj_dir/Vcounter
